@@ -1,0 +1,14 @@
+form(action='/message',method='post')
+  div(data-role='fieldcontain')
+    fieldset(data-role='controlgroup')
+      label(for='radius') Outreach radius:  
+        select(name='radius') 
+          option(value='2', selected=twoMile) < 2 Miles 
+          option(value='5', selected=fiveMile) < 5 Miles
+          option(value='10', selected=tenMile) < 10 Miles 
+  div(data-role='fieldcontain')
+    fieldset(data-role='controlgroup')
+      label(for='message') Message: 
+         input(id='message',type='text',value='',name='message', size = 70)
+  div(data-role='fieldcontain')   
+    input(type='submit',value='Send Message',data-transition='fade', data-theme='c') 

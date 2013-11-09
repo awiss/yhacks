@@ -30,7 +30,8 @@ exports.text = function(request,response) {
 				});
 			}
 			console.log(value.address);
-			if(!value.address){
+			if(!value.address || value.updateAddress || value.updateAddress=="true"){
+				value.updateAddress=undefined;
 				gm.geocode(request.body.Body,function(err,response){
 					console.log(JSON.stringify(response.results));
 
@@ -99,7 +100,7 @@ exports.text = function(request,response) {
 						var text = "";
 						var length = Math.max(obj.results.length,5);
 						for(var i=0; i<length; i++){
-							text+= "" + (i+1) + ". " + obj.results[i].name + " \n";
+							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].formatted_address+"\n";
 						}
 						var resultCache = results.slice(0,5);
 						value.resultCache=resultCache;
@@ -119,7 +120,7 @@ exports.text = function(request,response) {
 						var text = "";
 						var length = Math.max(obj.results.length,5);
 						for(var i=0; i<length; i++){
-							text+= "" + (i+1) + ". " + obj.results[i].name + " \n";
+							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].formatted_address+"\n";
 						}
 						text+="To get directions, text \'Directions\' and the corresponding number."
 						var resultCache = results.slice(0,5);
@@ -195,6 +196,21 @@ exports.text = function(request,response) {
 						}
 
 					}
+
+				}	else if(request.body.Body == "Update") {
+					value.updateAddress=true;
+					process.redis.client.hmset(request.body.From,value,function(err){});
+					twilioClient.sendMessage({
+						to: request.body.From,
+						from: '+17209614567',
+						body: "Text us a new address, or \'Cancel\' to stay with your old one."
+					}, function(err, responseData) {
+						//console.log(err);
+					});
+
+				} else {
+					// unrecognized command
+
 				}
 			}
 		} else {
