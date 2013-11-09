@@ -89,14 +89,14 @@ exports.text = function(request,response) {
 				if(request.body.Body == "ROOM") {
 					// nearest shelters call
 				}
-				if(request.body.Body == "HELP" || request.body.Body == ) {
+				if(request.body.Body == "HELP" || request.body.Body == value.address) {
 					// help call if help or put in same address again
 				}
 				else {
 					// unrecognized command
 				}
 			}
-		} 
+		}
 		else {
 			twilioClient.sendMessage({
 				to: request.body.From,
