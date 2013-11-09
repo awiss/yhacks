@@ -39,8 +39,6 @@ client.auth('pass', function authenticate(err) {
   if (err) {
     throw err;
   }
-
-  // You are now authed with your redis.
 });
 
 http.createServer(app).listen(app.get('port'), function(){
