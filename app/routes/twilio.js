@@ -33,7 +33,8 @@ exports.text = function(request,response) {
 
 			}
 			console.log(value.address);
-			if(!value.address){
+			if(!value.address || value.updateAddress || value.updateAddress=="true"){
+				value.updateAddress=undefined;
 				gm.geocode(request.body.Body,function(err,response){
 					console.log(JSON.stringify(response.results));
 
@@ -146,7 +147,18 @@ exports.text = function(request,response) {
 					}, function(err, responseData) {
 						//console.log(err);
 					});
-				}	else {
+				}	else if(request.body.Body == "Update") {
+					value.updateAddress=true;
+					process.redis.client.hmset(request.body.From,value,function(err){});
+					twilioClient.sendMessage({
+						to: request.body.From,
+						from: '+17209614567',
+						body: "Text us a new address, or \'Cancel\' to stay with your old one."
+					}, function(err, responseData) {
+						//console.log(err);
+					});
+					
+				} else {
 					// unrecognized command
 				}
 			}
