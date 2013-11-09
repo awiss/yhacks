@@ -4,9 +4,9 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
-  , twil = require('./routes/twilio')
+  , routes = require('./app/routes')
+  , user = require('./app/routes/user')
+  , twil = require('./app/routes/twilio')
   , http = require('http')
   , path = require('path');
 
