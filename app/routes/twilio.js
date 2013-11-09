@@ -107,6 +107,7 @@ exports.text = function(request,response) {
 							console.log(obj.results[i].vicinity);
 							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].vicinity+"\n";
 						}
+						text+="To get directions, text \'Directions\' and the corresponding number."
 						var resultCache = obj.results.slice(0,5);
 						value.resultCache=resultCache;
 						process.redis.client.hmset(request.body.From,value,function(err){});
