@@ -23,7 +23,8 @@ exports.add = function(req, res){
  		obj.address=response.results[0].formatted_address;
 		obj.latitude = response.results[0].geometry.location.lat.toString();
 		obj.longitude = response.results[0].geometry.location.lng.toString();
-		obj.name = req.body.organizationName;
+		obj.orgname = req.body.organizationName;
+		console.log(req.body.organizationName);
 		console.log('Setting '+"user:"+req.body.email+ " to "+JSON.stringify(obj));
  		process.redis.client.hmset("user:"+req.body.email, obj, function(err,value){
  			req.session.email=req.body.email;
@@ -37,20 +38,25 @@ exports.send = function(req,res){
 	var email = req.session.email;
 	console.log(email);
 	process.redis.client.hgetall("user:"+email, function(err,value){
-		utils.sendNotification(value.latitude,value.longitude,req.body.message,value.name,parseInt(req.body.radius));
+		utils.sendNotification(value.latitude,value.longitude,req.body.message,value.orgname,parseInt(req.body.radius));
   	console.log(err);
   });
 }
 exports.login = function(req, res){
 	console.log(req.body.password1);
+	console.log(req.body.email1);
 	//console.log(passwordHash.verify(req.body.password1, hashedPassword));
-  process.redis.client.get("user:"+req.body.email1, function(err,value){
-  	if(passwordHash.verify(req.body.password1, value)){
+  process.redis.client.hgetall("user:"+req.body.email1, function(err,value){
+  	if(passwordHash.verify(req.body.password1, value.hp)){
   		console.log("verified");
   		req.session.email=req.body.email1;
   		res.redirect('/message');
   	}
-  	console.log(err);
+  	if(err){
+  		console.log(err);
+  		res.end();
+  	}
+  	
   });
 };
 exports.message = function(req,res){

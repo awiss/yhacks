@@ -101,11 +101,13 @@ exports.text = function(request,response) {
 					kitchens.getKitchens(value.latitude,value.longitude,function(err,body){
 						var obj = JSON.parse(body);
 						var text = "";
-						var length = Math.max(obj.results.length,5);
+						var length = obj.results.length<5 ? obj.results.length : 5;
 						for(var i=0; i<length; i++){
-							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].formatted_address+"\n";
+							console.log(obj.results[i]);
+							console.log(obj.results[i].vicinity);
+							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].vicinity+"\n";
 						}
-						var resultCache = results.slice(0,5);
+						var resultCache = obj.results.slice(0,5);
 						value.resultCache=resultCache;
 						process.redis.client.hmset(request.body.From,value,function(err){});
 						twilioClient.sendMessage({
