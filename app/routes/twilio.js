@@ -1,6 +1,6 @@
 var gm = require('googlemaps');
 var twilioClient = require('twilio')('ACcf46cc45dfc6c558215e76d503ee76de','ebdfcae31d9493e4859d3b80c2b2672b');
-exports.text = function(request,response){
+exports.text = function(request,response) {
 	console.log('Post to /twilio');
 	console.log(request.body.From);
 	process.redis.client.hgetall(request.body.From,function(err,value){
@@ -83,7 +83,8 @@ exports.text = function(request,response){
 			} else {
 				console.log("has address");
 			}
-		} else {
+		} 
+		else {
 			twilioClient.sendMessage({
 				to: request.body.From,
 				from: '+17209614567', 
@@ -102,15 +103,10 @@ exports.text = function(request,response){
 			twilioClient.sendMessage({
 				to: request.body.From,
 				from: '+17209614567',
-				body: 'Text FOOD for directions to the nearest soup kitchen.\n
-					Text ROOM for directions to the nearest shelter.\n
-					Text GIVE ME SHELTER to subscribe to severe weather alerts.\n
-					Text STOP WEATHER to unsubscribe from severe weather alerts.'
+				body: "Text FOOD for directions to the nearest soup kitchen.\nText ROOM for directions to the nearest shelter.\nText GIVE ME SHELTER to subscribe to severe weather alerts.\nText STOP WEATHER to unsubscribe from severe weather alerts."
 			}, function(err, responseData) {
 				//console.log(err);
 			});
 		}
-
-	}
-
+	});
 }
