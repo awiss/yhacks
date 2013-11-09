@@ -102,9 +102,12 @@ exports.text = function(request,response){
 			twilioClient.sendMessage({
 				to: request.body.From,
 				from: '+17209614567',
-				body: ''
+				body: 'Text FOOD for directions to the nearest soup kitchen.\n
+					Text ROOM for directions to the nearest shelter.\n
+					Text GIVE ME SHELTER to subscribe to severe weather alerts.\n
+					Text STOP WEATHER to unsubscribe from severe weather alerts.'
 			}, function(err, responseData) {
-
+				//console.log(err);
 			});
 		}
 
