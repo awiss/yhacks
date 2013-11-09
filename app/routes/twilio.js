@@ -30,7 +30,7 @@ exports.text = function(request,response) {
 				});
 			}
 			if(request.body.Body.indexOf('Directions')>-1 && value.resultsCache){
-				
+
 			}
 			console.log(value.address);
 			if(!value.address){
@@ -102,7 +102,7 @@ exports.text = function(request,response) {
 						var text = "";
 						var length = Math.max(obj.results.length,5);
 						for(var i=0; i<length; i++){
-							text+= "" + (i+1) + ". " + obj.results[i].name + " \n";
+							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].formatted_address+"\n";
 						}
 						var resultCache = results.slice(0,5);
 						value.resultCache=resultCache;
@@ -122,7 +122,7 @@ exports.text = function(request,response) {
 						var text = "";
 						var length = Math.max(obj.results.length,5);
 						for(var i=0; i<length; i++){
-							text+= "" + (i+1) + ". " + obj.results[i].name + " \n";
+							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].formatted_address+"\n";
 						}
 						text+="To get directions, text \'Directions\' and the corresponding number."
 						var resultCache = results.slice(0,5);
