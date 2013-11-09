@@ -6,9 +6,10 @@
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
-  , twilio = require('./routes/twilio')
+  , twil = require('./routes/twilio')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , twilioClient = require('twilio')('ACcf46cc45dfc6c558215e76d503ee76de','ebdfcae31d9493e4859d3b80c2b2672b');
 
 var app = express();
 
@@ -30,7 +31,7 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
-app.post('/twilio', twilio.basic);
+app.post('/twilio', twil.text);
 
 var redis = require('redis'),
     client = redis.createClient(6379, 'subdomain.redistogo.com');
