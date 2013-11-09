@@ -4,5 +4,6 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Gimme-Shelter' });
+  res.render('notifications', { title: 'Gimme-Shelter' });
 };
+
