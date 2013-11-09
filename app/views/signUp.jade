@@ -1,19 +1,19 @@
-form(action='/add',method='post')
+form(action='/add',method='post', style='margin-left:0px')
   div(data-role='fieldcontain')
     fieldset(data-role='controlgroup')
       label(for='organizationName') Organization Name: 
-         input(id='organizationName',type='text',value='',name='organizaitonName', size = 70)
+         input(id='organizationName',type='text',value='',name='organizaitonName', size = 70, style='margin-left:40px')
   div(data-role='fieldcontain')
     fieldset(data-role='controlgroup')
       label(for='address') Address: 
-         input(id='address',type='text',value='',name='address', size = 70)
+         input(id='address',type='text',value='',name='address', size = 70, style='margin-left:110px')
   div(data-role='fieldcontain')
     fieldset(data-role='controlgroup')
       label(for='email') Email: 
-         input(id='email',type='text',value='',placeholder='you@example.com',name='email')
+         input(id='email',type='text',value='',placeholder='you@example.com',name='email', style='margin-left:130px')
   div#passworddiv(data-role='fieldcontain')
     fieldset(data-role='controlgroup')
       label(for='password') Password: 
-         input(id='password',type='password',value='',placeholder='',name='password')
+         input(id='password',type='password',value='',placeholder='',name='password', style='margin-left:100px')
   div(data-role='fieldcontain')   
     input(type='submit',value='Sign Up',data-transition='fade', data-theme='c')
