@@ -15,17 +15,31 @@
     <script>
 var map;
 var infowindow;
-var pyrmont;
+var pyrmont=new google.maps.LatLng(-30, 30);
+var address="12004 Montrose Village Terr rockville MD 20852";
 var directionsService = new google.maps.DirectionsService();
+var geocode;
+var newOne;
 function initialize() {
-   pyrmont = new google.maps.LatLng(41.30515,-72.933426);
-
+    console.log(pyrmont);
+   geocode = new google.maps.Geocoder();
+    geo();
+}
+function geo(){
+var request = {
+    address: address,
+  };
+  geocode.geocode(request, callBackGeofunction);
+    
+}
+function callBackGeofunction(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      pyrmont=results[0].geometry.location;
   map = new google.maps.Map(document.getElementById('map-canvas'), {
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     center: pyrmont,
     zoom: 15
   });
-
   var request = {
     location: pyrmont,
     radius: 500,
@@ -34,6 +48,7 @@ function initialize() {
   infowindow = new google.maps.InfoWindow();
   var service = new google.maps.places.PlacesService(map);
   service.textSearch(request, callback);
+    } 
 }
 function kitchen(name, address, location)
 {
