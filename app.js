@@ -34,6 +34,8 @@ app.get('/delete', user.list);
 app.post('/twilio', twil.text);
 app.post('/add', user.add);
 app.post('/login', user.login);
+app.post('/message',user.send);
+
 var redis = require('redis');
 process.redis = {};
 process.redis.client = redis.createClient(6379, 'nodejitsudb4330693089.redis.irstack.com');
