@@ -1,6 +1,7 @@
 var gm = require('googlemaps');
+var kitchens = require('./get_kitchens');
 var twilioClient = require('twilio')('ACcf46cc45dfc6c558215e76d503ee76de','ebdfcae31d9493e4859d3b80c2b2672b');
-exports.text = function(request,response){
+exports.text = function(request,response) {
 	console.log('Post to /twilio');
 	console.log(request.body.From);
 	process.redis.client.hgetall(request.body.From,function(err,value){
@@ -22,13 +23,13 @@ exports.text = function(request,response){
 				});
 				twilioClient.sendMessage({
 					to: request.body.From,
-					from: '+17209614567', 
+					from: '+17209614567',
 					body: 'Thanks! Your address was stored as' + value.address
-				}, function(err, responseData) { 
+				}, function(err, responseData) {
 					//console.log(err);
 				});
 			}
-			
+
 			console.log(value.address);
 			if(!value.address){
 				gm.geocode(request.body.Body,function(err,response){
@@ -37,9 +38,9 @@ exports.text = function(request,response){
 					if(response.results.length==0){
 						twilioClient.sendMessage({
 						to: request.body.From,
-						from: '+17209614567', 
-						body: 'Sorry, we couldn\'t find that address. Please try again'	
-						}, function(err, responseData) { 
+						from: '+17209614567',
+						body: 'Sorry, we couldn\'t find that address. Please try again'
+						}, function(err, responseData) {
 							//console.log(err);
 						});
 					} else if (response.results.length==1){
@@ -47,16 +48,16 @@ exports.text = function(request,response){
 						value.address=response.results[0].formatted_address;
 						value.latitude = response.results[0].geometry.location.lat.toString();
 						value.longitude = response.results[0].geometry.location.lng.toString();
-						
+
 						process.redis.client.hmset(request.body.From,value,function(err){
 							console.log("REDIS:"+err);
 						});
 
 						twilioClient.sendMessage({
 							to: request.body.From,
-							from: '+17209614567', 
+							from: '+17209614567',
 							body: 'Thanks! Your address was stored as ' + value.address
-						}, function(err, responseData) { 
+						}, function(err, responseData) {
 							//console.log(err);
 						});
 
@@ -71,34 +72,64 @@ exports.text = function(request,response){
 							}
 							twilioClient.sendMessage({
 								to: request.body.From,
-						  	from: '+17209614567', 
+						  	from: '+17209614567',
 								body: body
-							}, function(err, responseData) { 
+							}, function(err, responseData) {
 								//console.log(err);
 							});
-						});		
+						});
 					}
 				});
-				
+
 			} else {
 				console.log("has address");
+				if(!value.latitude || !value.longitude){
+					value.address=undefined;
+					process.redis.client.hmset(request.body.From,value,function(err){});
+					twilioClient.sendMessage({
+						to: request.body.From,
+				  	from: '+17209614567',
+						body: 'Sorry, we are missing some info. Text us your address to fix this.'
+					}, function(err, responseData) {
+						//console.log(err);
+					});
+				}
+				if(request.body.Body == "Food") {
+					kitchens.getKitchens(value.latitude,value.longitude,function(err,body){
+						body.results.forEach(function(entry){
+							console.log(entry);
+						});
+					});
+					// soup kitchen call
+				} else if(request.body.Body == "Room") {
+					// nearest shelters call
+				} else if(request.body.Body == "Help" || request.body.Body == value.address) {
+					// help call if help or put in same address again
+					twilioClient.sendMessage({
+						to: request.body.From,
+						from: '+17209614567',
+						body: "Text FOOD for directions to the nearest soup kitchen.\nText ROOM for directions to the nearest shelter.\nText GIVE ME SHELTER to subscribe to severe weather alerts.\nText STOP WEATHER to unsubscribe from severe weather alerts."
+					}, function(err, responseData) {
+						//console.log(err);
+					});
+				}	else {
+					// unrecognized command
+				}
 			}
 		} else {
 			twilioClient.sendMessage({
 				to: request.body.From,
-				from: '+17209614567', 
+				from: '+17209614567',
 				body: 'Welcome to GimmeShelter! To get started, enter your current address.'
-			}, function(err, responseData) { 
+			}, function(err, responseData) {
 				//console.log(err);
-				if (!err) { 
+				if (!err) {
 					process.redis.client.hmset(request.body.From,{"weather":"true"});
 		    	// console.log(responseData.from);
 		    	// console.log(responseData.body);
 				}
 			});
 		}
-		
-		
 	});
 
 }

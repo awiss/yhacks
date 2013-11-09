@@ -44,3 +44,4 @@ exports.login2 = function(req, res){
   	console.log(value);
   });
 };
+
