@@ -14,7 +14,7 @@ exports.list = function(req, res){
 };
 exports.add = function(req, res){
 	console.log(express.session);
-	var hashedPassword = "1"//passwordHash.generate(req.body.password);
+	var hashedPassword = passwordHash.generate(req.body.password);
 	console.log("hi");
 	console.log(hashedPassword);
 	var obj = {};
@@ -24,6 +24,7 @@ exports.add = function(req, res){
 		obj.latitude = response.results[0].geometry.location.lat.toString();
 		obj.longitude = response.results[0].geometry.location.lng.toString();
 		obj.name = req.body.organizationName;
+		console.log('Setting '+"user:"+req.body.email+ " to "+JSON.stringify(obj));
  		process.redis.client.hmset("user:"+req.body.email, obj, function(err,value){
  			req.session.email=req.body.email;
   		console.log(err);
@@ -34,8 +35,9 @@ exports.add = function(req, res){
 
 exports.send = function(req,res){
 	var email = req.session.email;
-	process.redis.client.hgetall("user:"+req.body.email, function(err,value){
-		utils.sendNotification(value.latitude,value.longitude,req.body.mess,value.name,req.body.radius);
+	console.log(email);
+	process.redis.client.hgetall("user:"+email, function(err,value){
+		utils.sendNotification(value.latitude,value.longitude,req.body.message,value.name,parseInt(req.body.radius));
   	console.log(err);
   });
 }
@@ -53,5 +55,11 @@ exports.login = function(req, res){
 };
 exports.message = function(req,res){
 	res.render('messageForm',{title:'GimmeShelter'});
+}
+exports.signup = function(req,res){
+	res.render('signUp',{title:'GimmeShelter'});
+}
+exports.loggingIn = function(req,res){
+	res.render('form',{title:'GimmeShelter'});
 }
 

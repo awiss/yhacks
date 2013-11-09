@@ -21,9 +21,13 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+app.use(express.cookieParser());
+app.use(express.session({ secret: 'guest'}));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'app/public')));
-app.use(express.session({ secret: 'guest'}));
+
+
+
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
@@ -31,6 +35,9 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/delete', user.list);
+app.get('/signup', user.signup);
+app.get('/login', user.loggingIn);
+app.get('/message', user.message);
 app.post('/twilio', twil.text);
 app.post('/add', user.add);
 app.post('/login', user.login);
