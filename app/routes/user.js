@@ -24,17 +24,16 @@ exports.add = function(req, res){
   });
 };
 exports.login = function(req, res){
-	console.log("hi");
-
-};
-exports.login2 = function(req, res){
 	console.log(req.body.password1);
+	console.log(req.body.email);
 	console.log("hi");
 	//console.log(passwordHash.verify(req.body.password1, hashedPassword));
   process.redis.client.get("user:"+req.body.email1, function(err,value){
+  	console.log("hey");
   	if(passwordHash.verify(req.body.password1, value)){
   		console.log("verified");
   		express.session.secret=req.body.email1;
+  		console.log(express.session.secret);
 
   	}
   	console.log(err);
