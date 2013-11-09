@@ -94,7 +94,7 @@ exports.text = function(request,response) {
 									//console.log(err);
 								});
 				}
-				if(request.body.Body == "Food") {
+				if(request.body.Body.toUpperCase() == "FOOD") {
 					kitchens.getKitchens(value.latitude,value.longitude,function(err,body){
 						var obj = JSON.parse(body);
 						var text = "";
@@ -114,7 +114,7 @@ exports.text = function(request,response) {
 						});
 					});
 					// soup kitchen call
-				} else if(request.body.Body == "Room") {
+				} else if(request.body.Body.toUpperCase() == "ROOM") {
 					kitchens.getShelters(value.latitude,value.longitude,function(err,body){
 						var obj = JSON.parse(body);
 						var text = "";
@@ -135,7 +135,7 @@ exports.text = function(request,response) {
 						});
 					});
 					// nearest shelters call
-				} else if(request.body.Body == "Help" || request.body.Body == value.address) {
+				} else if(request.body.Body.toUpperCase() == "HELP" || request.body.Body == value.address) {
 					// help call if help or put in same address again
 					twilioClient.sendMessage({
 						to: request.body.From,
@@ -197,7 +197,7 @@ exports.text = function(request,response) {
 
 					}
 
-				}	else if(request.body.Body == "Update") {
+				}	else if(request.body.Body.toUpperCase() == "UPDATE") {
 					value.updateAddress=true;
 					process.redis.client.hmset(request.body.From,value,function(err){});
 					twilioClient.sendMessage({
