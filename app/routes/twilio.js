@@ -29,9 +29,6 @@ exports.text = function(request,response) {
 					//console.log(err);
 				});
 			}
-			if(request.body.Body.indexOf('Directions')>-1 && value.resultsCache){
-
-			}
 			console.log(value.address);
 			if(!value.address || value.updateAddress || value.updateAddress=="true"){
 				value.updateAddress=undefined;
@@ -40,9 +37,9 @@ exports.text = function(request,response) {
 
 					if(response.results.length==0){
 						twilioClient.sendMessage({
-						to: request.body.From,
-						from: '+17209614567',
-						body: 'Sorry, we couldn\'t find that address. Please try again'
+							to: request.body.From,
+							from: '+17209614567',
+							body: 'Sorry, we couldn\'t find that address. Please try again'
 						}, function(err, responseData) {
 							//console.log(err);
 						});
@@ -75,7 +72,7 @@ exports.text = function(request,response) {
 							}
 							twilioClient.sendMessage({
 								to: request.body.From,
-						  	from: '+17209614567',
+								from: '+17209614567',
 								body: body
 							}, function(err, responseData) {
 								//console.log(err);
@@ -91,11 +88,11 @@ exports.text = function(request,response) {
 					process.redis.client.hmset(request.body.From,value,function(err){});
 					twilioClient.sendMessage({
 						to: request.body.From,
-				  	from: '+17209614567',
+						from: '+17209614567',
 						body: 'Sorry, we are missing some info. Text us your address to fix this.'
 					}, function(err, responseData) {
-						//console.log(err);
-					});
+									//console.log(err);
+								});
 				}
 				if(request.body.Body == "Food") {
 					kitchens.getKitchens(value.latitude,value.longitude,function(err,body){
@@ -115,8 +112,8 @@ exports.text = function(request,response) {
 							to: request.body.From,
 							from: '+17209614567',
 							body: text
-							}, function(err, responseData) {
-						
+						}, function(err, responseData) {
+
 						});
 					});
 					// soup kitchen call
@@ -136,8 +133,8 @@ exports.text = function(request,response) {
 							to: request.body.From,
 							from: '+17209614567',
 							body: text
-							}, function(err, responseData) {
-						
+						}, function(err, responseData) {
+
 						});
 					});
 					// nearest shelters call
@@ -146,10 +143,63 @@ exports.text = function(request,response) {
 					twilioClient.sendMessage({
 						to: request.body.From,
 						from: '+17209614567',
-						body: "Text FOOD for directions to the nearest soup kitchen.\nText ROOM for directions to the nearest shelter.\nText GIVE ME SHELTER to subscribe to severe weather alerts.\nText STOP WEATHER to unsubscribe from severe weather alerts."
+						body: "Text Food for nearby soup kitchens.\nText Room for nearby shelters."
 					}, function(err, responseData) {
 						//console.log(err);
 					});
+				}	else if(request.body.Body.indexOf("Directions") != -1 && request.body.Body.indexOf("ROOM") != -1) {
+					// help call if help or put in same address again
+					var str = JSON.parse(request.body.Body);
+					var text_arr = str.split(" ");
+					var num = parseInt(text_arr[text_arr.length - 1]); // Major assuption that number will be last thing in text
+					var text = "";
+					// Origin lat and long
+					var lat1 = value.latitude;
+					var lng1 = value.longitude;
+					var latlng1 = lat1+","+lng1;
+					// destination lat and long
+					var lat2 = value.resultsCache[num - 1].geometry.location.lat.toString;
+					var lng2 = value.resultsCache[num - 1].geometry.location.lng.toString;
+					var latlng2 = lat2+","+lng2;
+					gm.directions(latlng1, latlng2, callback, false, 'walking');
+					function callback(err, response) {
+						console.log(JSON.stringify(response.results));
+
+						if(response.results.length==0){
+							twilioClient.sendMessage({
+								to: request.body.From,
+								from: '+17209614567',
+								body: 'Sorry, we couldn\'t find that address. Please try again'
+							}, function(err, responseData) {
+							//console.log(err);
+						});
+						} else {
+							// directions found
+							var steps = ""
+							var legs = response.results.routes.legs.length;
+							for(var i=0; i<legs; i++){
+								var steps = leg[i].length;
+								for(var j = 0; j<steps; j++) {
+									steps += response.results.routes.legs[i].steps[j].html_instructions.replace(/(<([^>]+)>)/ig,"") + "\n";
+								}
+							}
+							console.log(steps);
+
+							process.redis.client.hmset(request.body.From,value,function(err){
+								console.log("REDIS:"+err);
+							});
+
+							twilioClient.sendMessage({
+								to: request.body.From,
+								from: '+17209614567',
+								body: 'Thanks! Your address was stored as ' + value.address
+							}, function(err, responseData) {
+								//console.log(err);
+							});
+						}
+
+					}
+
 				}	else if(request.body.Body == "Update") {
 					value.updateAddress=true;
 					process.redis.client.hmset(request.body.From,value,function(err){});
@@ -160,9 +210,10 @@ exports.text = function(request,response) {
 					}, function(err, responseData) {
 						//console.log(err);
 					});
-					
+
 				} else {
 					// unrecognized command
+
 				}
 			}
 		} else {
@@ -175,11 +226,11 @@ exports.text = function(request,response) {
 				console.log(err);
 				if (!err) {
 					process.redis.client.hmset(request.body.From,{"weather":"true"});
-		    	// console.log(responseData.from);
-		    	// console.log(responseData.body);
-				}
-			});
+	    	// console.log(responseData.from);
+	    	// console.log(responseData.body);
+	    }
+		  });
 		}
 	});
-
 }
+
