@@ -29,12 +29,13 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
+app.get('/delete', user.list);
 app.post('/twilio', twil.text);
 
 var redis = require('redis');
+process.redis = {};
 process.redis.client = redis.createClient(6379, 'nodejitsudb4330693089.redis.irstack.com');
-client.auth('nodejitsudb4330693089.redis.irstack.com:f327cfe980c971946e80b8e975fbebb4', function (err) {
+process.redis.client.auth('nodejitsudb4330693089.redis.irstack.com:f327cfe980c971946e80b8e975fbebb4', function (err) {
 	if (err) { throw err; }
 });
 
