@@ -98,7 +98,16 @@ exports.text = function(request,response){
 			});
 		}
 		
-		
-	});
+		function help() {
+			twilioClient.sendMessage({
+				to: request.body.From,
+				from: '+17209614567',
+				body: ''
+			}, function(err, responseData) {
+
+			});
+		}
+
+	}
 
 }
