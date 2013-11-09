@@ -1,6 +1,14 @@
 form(action='/add',method='post')
   div(data-role='fieldcontain')
     fieldset(data-role='controlgroup')
+      label(for='organizationName') Organization Name: 
+         input(id='organizationName',type='text',value='',name='organizaitonName')
+  div(data-role='fieldcontain')
+    fieldset(data-role='controlgroup')
+      label(for='address') Address: 
+         input(id='address',type='text',value='',name='address')
+  div(data-role='fieldcontain')
+    fieldset(data-role='controlgroup')
       label(for='email') email
          input(id='email',type='text',value='',placeholder='@',name='email')
   div#passworddiv(data-role='fieldcontain')
