@@ -84,8 +84,6 @@ function callback(results, status) {
   }
 }
 
-
-<<<<<<< HEAD
 // function print(array){
 //   var ret="";
 //   for(var i=0;i<array.length;i++){
@@ -135,54 +133,3 @@ function callback(results, status) {
 //     infowindow.open(map, this);
 //   });
 // }
-=======
-function print(array){
-  var ret="";
-  for(var i=0;i<array.length;i++){
-    ret=ret+(array[i].name + " " + array[i].address + "\n");
-  }
-  return ret;
-}
-
-
-function printDir(name){
-  var loc;
-  var ret="";
-  for (var i = 0; i < listOfLocations.length; i++) {
-      if(listOfLocations[i].name==name){
-        loc=listOfLocations[i].location;
-        break;
-      }
-    }
-    var request={
-      origin:pyrmont,
-      destination: loc.toString(),
-      travelMode: google.maps.TravelMode.WALKING
-    };
-     directionsService.route(request, function(response, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      console.log(response);
-      console.log(response.routes[0].legs[0].steps);
-        for (var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
-      ret+=response.routes[0].legs[0].steps[i].instructions+"\n";
-      }
-      console.log(ret);
-    }
-  });
-    return loc;
-}
-
-
-function createMarker(place) {
-  var placeLoc = place.geometry.location;
-  var marker = new google.maps.Marker({
-    map: map,
-    position: place.geometry.location
-  });
-
-  google.maps.event.addListener(marker, 'click', function() {
-    infowindow.setContent(place.name);
-    infowindow.open(map, this);
-  });
-}
->>>>>>> ced66c7f3ca8996f5deaacdbdfccd97cf5677ec0
