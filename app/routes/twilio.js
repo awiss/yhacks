@@ -1,4 +1,5 @@
 var gm = require('googlemaps');
+var kitchens = require('./get_kitchens');
 var twilioClient = require('twilio')('ACcf46cc45dfc6c558215e76d503ee76de','ebdfcae31d9493e4859d3b80c2b2672b');
 exports.text = function(request,response) {
 	console.log('Post to /twilio');
@@ -82,15 +83,27 @@ exports.text = function(request,response) {
 
 			} else {
 				console.log("has address");
-
-				if(request.body.Body == "FOOD") {
-					
+				if(!value.latitude || !value.longitude){
+					value.address=undefined;
+					process.redis.client.hmset(request.body.From,value,function(err){});
+					twilioClient.sendMessage({
+						to: request.body.From,
+				  	from: '+17209614567',
+						body: 'Sorry, we are missing some info. Text us your address to fix this.'
+					}, function(err, responseData) {
+						//console.log(err);
+					});
+				}
+				if(request.body.Body == "Food") {
+					kitchens.getKitchens(value.latitude,value.longitude,function(err,body){
+						body.results.forEach(function(entry){
+							console.log(entry);
+						});
+					});
 					// soup kitchen call
-				}
-				if(request.body.Body == "ROOM") {
+				} else if(request.body.Body == "Room") {
 					// nearest shelters call
-				}
-				if(request.body.Body == "HELP" || request.body.Body == value.address) {
+				} else if(request.body.Body == "Help" || request.body.Body == value.address) {
 					// help call if help or put in same address again
 					twilioClient.sendMessage({
 						to: request.body.From,
@@ -99,14 +112,11 @@ exports.text = function(request,response) {
 					}, function(err, responseData) {
 						//console.log(err);
 					});
-		}
-				}
-				else {
+				}	else {
 					// unrecognized command
 				}
 			}
-		}
-		else {
+		} else {
 			twilioClient.sendMessage({
 				to: request.body.From,
 				from: '+17209614567',
@@ -120,38 +130,6 @@ exports.text = function(request,response) {
 				}
 			});
 		}
-
-		function help() {
-			
-
-
-
-		function food(command) {
-			if(command == "FOOD") {
-
-			}
-			twilioClient.sendMessage({
-				to: request.body.From,
-				from: '+17209614567',
-				body: ''
-			}, function(err, responseData) {
-
-			});
-		}
-
-		function room(command) {
-			if(command == "ROOM") {
-
-			}
-			twilioClient.sendMessage({
-				to: request.body.From,
-				from: '+17209614567',
-				body: ''
-			}, function(err, responseData) {
-
-			});
-		}
-
 	});
 
 }
