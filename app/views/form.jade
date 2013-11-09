@@ -1,11 +1,11 @@
 form(action='/login',method='post')
   div(data-role='fieldcontain')
     fieldset(data-role='controlgroup')
-      label(for='email1') email
-         input(id='email1',type='text',value='',placeholder='@',name='email1')
+      label(for='email1') Email: 
+         input(id='email1',type='text',value='',placeholder='you@example.com',name='email1')
   div#passworddiv(data-role='fieldcontain')
     fieldset(data-role='controlgroup')
-      label(for='password1') password
+      label(for='password1') Password: 
          input(id='password1',type='password',value='',placeholder='',name='password1')
   div(data-role='fieldcontain')   
     input(type='submit',value='Log In',data-transition='fade', data-theme='c')

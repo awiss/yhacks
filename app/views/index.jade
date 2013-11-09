@@ -1,10 +1,14 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-
+  h1.section-heading Connect to the homeless in your area
+  p.lead.section-lead
+    | First time using Gimme-Shelter? Welcome! Please fill out the form below:
     include signUp.jade
-
+  p.section-paragraph
+    | Log in to send out notices:
     include form.jade
+
+  img(src= "../homeless.jpg")
+
 

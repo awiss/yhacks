@@ -29,9 +29,12 @@ exports.text = function(request,response) {
 					//console.log(err);
 				});
 			}
+			if(request.body.Body.indexOf('Directions')>-1 && value.resultsCache){
 
+			}
 			console.log(value.address);
-			if(!value.address){
+			if(!value.address || value.updateAddress || value.updateAddress=="true"){
+				value.updateAddress=undefined;
 				gm.geocode(request.body.Body,function(err,response){
 					console.log(JSON.stringify(response.results));
 
@@ -96,12 +99,44 @@ exports.text = function(request,response) {
 				}
 				if(request.body.Body == "Food") {
 					kitchens.getKitchens(value.latitude,value.longitude,function(err,body){
-						body.results.forEach(function(entry){
-							console.log(entry);
+						var obj = JSON.parse(body);
+						var text = "";
+						var length = Math.max(obj.results.length,5);
+						for(var i=0; i<length; i++){
+							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].formatted_address+"\n";
+						}
+						var resultCache = results.slice(0,5);
+						value.resultCache=resultCache;
+						process.redis.client.hmset(request.body.From,value,function(err){});
+						twilioClient.sendMessage({
+							to: request.body.From,
+							from: '+17209614567',
+							body: text
+							}, function(err, responseData) {
+						
 						});
 					});
 					// soup kitchen call
 				} else if(request.body.Body == "Room") {
+					kitchens.getShelters(value.latitude,value.longitude,function(err,body){
+						var obj = JSON.parse(body);
+						var text = "";
+						var length = Math.max(obj.results.length,5);
+						for(var i=0; i<length; i++){
+							text+= "" + (i+1) + ". " + obj.results[i].name + "- Address: "+obj.results[i].formatted_address+"\n";
+						}
+						text+="To get directions, text \'Directions\' and the corresponding number."
+						var resultCache = results.slice(0,5);
+						value.resultCache=resultCache;
+						process.redis.client.hmset(request.body.From,value,function(err){});
+						twilioClient.sendMessage({
+							to: request.body.From,
+							from: '+17209614567',
+							body: text
+							}, function(err, responseData) {
+						
+						});
+					});
 					// nearest shelters call
 				} else if(request.body.Body == "Help" || request.body.Body == value.address) {
 					// help call if help or put in same address again
@@ -112,17 +147,29 @@ exports.text = function(request,response) {
 					}, function(err, responseData) {
 						//console.log(err);
 					});
-				}	else {
+				}	else if(request.body.Body == "Update") {
+					value.updateAddress=true;
+					process.redis.client.hmset(request.body.From,value,function(err){});
+					twilioClient.sendMessage({
+						to: request.body.From,
+						from: '+17209614567',
+						body: "Text us a new address, or \'Cancel\' to stay with your old one."
+					}, function(err, responseData) {
+						//console.log(err);
+					});
+					
+				} else {
 					// unrecognized command
 				}
 			}
 		} else {
+			console.log('start');
 			twilioClient.sendMessage({
 				to: request.body.From,
 				from: '+17209614567',
 				body: 'Welcome to GimmeShelter! To get started, enter your current address.'
 			}, function(err, responseData) {
-				//console.log(err);
+				console.log(err);
 				if (!err) {
 					process.redis.client.hmset(request.body.From,{"weather":"true"});
 		    	// console.log(responseData.from);
