@@ -6,6 +6,7 @@
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
+  , twilio = require('./routes/twilio')
   , http = require('http')
   , path = require('path');
 
@@ -29,6 +30,7 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.post('/twilio', twilio.basic);
 
 var redis = require('redis'),
     client = redis.createClient(6379, 'subdomain.redistogo.com');
