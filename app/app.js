@@ -8,8 +8,7 @@ var express = require('express')
   , user = require('./routes/user')
   , twil = require('./routes/twilio')
   , http = require('http')
-  , path = require('path')
-  , twilioClient = require('twilio')('ACcf46cc45dfc6c558215e76d503ee76de','ebdfcae31d9493e4859d3b80c2b2672b');
+  , path = require('path');
 
 var app = express();
 
@@ -33,14 +32,14 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 app.post('/twilio', twil.text);
 
-var redis = require('redis'),
-    client = redis.createClient(6379, 'subdomain.redistogo.com');
+// var redis = require('redis'),
+//     client = redis.createClient(6379, 'subdomain.redistogo.com');
 
-client.auth('pass', function authenticate(err) {
-  if (err) {
-    throw err;
-  }
-});
+// client.auth('pass', function authenticate(err) {
+//   if (err) {
+//     throw err;
+//   }
+// });
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

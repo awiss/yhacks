@@ -1,13 +1,14 @@
 {
-  "name": "gimmeshelter",
-  "version": "0.0.1-7",
+  "name": "application-name",
+  "version": "0.0.1-14",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
     "express": "3.2.4",
-    "jade": "*"
+    "jade": "*",
+    "twilio": "1.3.11"
   },
   "subdomain": "gimmeshelter",
   "engines": {
