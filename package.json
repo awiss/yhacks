@@ -8,7 +8,7 @@
   "dependencies": {
     "express": "3.2.4",
     "jade": "*",
-    "twilio": "1.3.11"
+    "twilio": "*"
   },
   "subdomain": "gimmeshelter",
   "engines": {
