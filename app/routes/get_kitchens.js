@@ -46,6 +46,28 @@ exports.getKitchens = function(lat,lng,cb){
   });
 }
 
+
+exports.getShelters = function(lat,lng,cb){
+  var latLng = lat.toString() + "," + lng.toString();
+  var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+  url += "key=" + key;
+  url += "&location=" + latLng;
+  url += "&radius=" + "15000";
+  url += "&sensor=" + "false";
+  url += "&keyword=" + "homeless%20shelter";
+  url += "&rankby=" + "prominence";
+
+  console.log(url);
+  request(url,function (error, response, body) {
+    console.log(error);
+    if (response.statusCode == 200) {
+      cb(error,body);
+    } else {
+      cb(response.statusCode,body);
+    }
+  });
+}
+
 function callBackGeofunction(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
       pyrmont=results[0].geometry.location;
