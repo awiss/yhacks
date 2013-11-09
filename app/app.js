@@ -30,6 +30,19 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
+var redis = require('redis'),
+    client = redis.createClient(6379, 'subdomain.redistogo.com');
+
+client.auth('pass', function authenticate(err) {
+  if (err) {
+    throw err;
+  }
+
+  // You are now authed with your redis.
+});
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+
