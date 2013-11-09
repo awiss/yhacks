@@ -2,12 +2,12 @@ var gm = require('googlemaps');
 var kitchens = require('./get_kitchens');
 var twilioClient = require('twilio')('ACcf46cc45dfc6c558215e76d503ee76de','ebdfcae31d9493e4859d3b80c2b2672b');
 exports.text = function(request,response) {
-	console.log('Post to /twilio');
-	console.log(request.body.From);
 	process.redis.client.hgetall(request.body.From,function(err,value){
-		console.log(err);
 		console.log(value);
+		console.log(request.body.Body);
+		console.log(value.resultCache);
 		if(value){
+			console.log('here');
 			if(value.results){
 				var resultsArr = JSON.parse(value.results);
 				var index = parseInt(request.body.Body);
@@ -147,9 +147,10 @@ exports.text = function(request,response) {
 					}, function(err, responseData) {
 						//console.log(err);
 					});
-				}	else if(request.body.Body.indexOf("Directions") != -1 && request.body.Body.indexOf("ROOM") != -1) {
+				}	else if(request.body.Body.indexOf("Directions") != -1 && value.resultCache != undefined) {
 					// help call if help or put in same address again
-					var str = JSON.parse(request.body.Body);
+					console.log('in here');
+					var str = request.body.Body;
 					var text_arr = str.split(" ");
 					var num = parseInt(text_arr[text_arr.length - 1]); // Major assuption that number will be last thing in text
 					var text = "";
@@ -158,9 +159,10 @@ exports.text = function(request,response) {
 					var lng1 = value.longitude;
 					var latlng1 = lat1+","+lng1;
 					// destination lat and long
-					var lat2 = value.resultsCache[num - 1].geometry.location.lat.toString;
-					var lng2 = value.resultsCache[num - 1].geometry.location.lng.toString;
+					var lat2 = value.resultCache[num - 1].geometry.location.lat.toString;
+					var lng2 = value.resultCache[num - 1].geometry.location.lng.toString;
 					var latlng2 = lat2+","+lng2;
+					console.log('coordinates:' +latlng1 + " - "+latlng2);
 					gm.directions(latlng1, latlng2, callback, false, 'walking');
 					function callback(err, response) {
 						console.log(JSON.stringify(response.results));
@@ -169,7 +171,7 @@ exports.text = function(request,response) {
 							twilioClient.sendMessage({
 								to: request.body.From,
 								from: '+17209614567',
-								body: 'Sorry, we couldn\'t find that address. Please try again'
+								body: 'Sorry, we couldn\'t find those directions.'
 							}, function(err, responseData) {
 							//console.log(err);
 						});
@@ -184,7 +186,7 @@ exports.text = function(request,response) {
 								}
 							}
 							console.log(steps);
-
+							value.resultCache=undefined;
 							process.redis.client.hmset(request.body.From,value,function(err){
 								console.log("REDIS:"+err);
 							});
@@ -192,7 +194,7 @@ exports.text = function(request,response) {
 							twilioClient.sendMessage({
 								to: request.body.From,
 								from: '+17209614567',
-								body: 'Thanks! Your address was stored as ' + value.address
+								body: steps
 							}, function(err, responseData) {
 								//console.log(err);
 							});
