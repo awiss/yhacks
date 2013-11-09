@@ -8,7 +8,8 @@ var express = require('express')
   , user = require('./app/routes/user')
   , twil = require('./app/routes/twilio')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , passwordHash=require ('password-hash');
 
 var app = express();
 
@@ -22,7 +23,7 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'app/public')));
-
+app.use(express.session({ secret: 'guest'}));
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
@@ -31,14 +32,14 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/delete', user.list);
 app.post('/twilio', twil.text);
-
+app.post('/add', user.add);
+app.post('/login', user.login);
 var redis = require('redis');
 process.redis = {};
 process.redis.client = redis.createClient(6379, 'nodejitsudb4330693089.redis.irstack.com');
 process.redis.client.auth('nodejitsudb4330693089.redis.irstack.com:f327cfe980c971946e80b8e975fbebb4', function (err) {
 	if (err) { throw err; }
 });
-
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
